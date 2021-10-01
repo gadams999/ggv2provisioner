@@ -15,7 +15,7 @@ License:
 """
 
 import click
-from .install import install_command
+from .install.install_command import install_greengrass
 
 
 @click.group()
@@ -32,7 +32,7 @@ def cli() -> None:
 )
 @click.option("-t", "--target", required=True, default="/greengrass/v2")
 def install(source, target):
-    install_command.install_greengrass(source=source, target_dir=target)
+    install_greengrass(source=source, target_dir=target)
 
 
 if __name__ == "__main__":

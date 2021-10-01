@@ -33,12 +33,12 @@ def install_greengrass(source: str, target_dir: Path):
 
     # validate file and uncompress into install dir
     with tempfile.TemporaryDirectory() as install_dir:
-        source_file: Path
-        if not validators(source) and Path(source).is_file:
+        # source_file: Path
+        if not validators.url(source) and Path(source).is_file():
             # Reference local file (zip or Greengrass.jar)
             source_file = Path(source)
 
-        elif validators(source):
+        elif validators.url(source):
             # Otherwise download from URL
             source_file = Path(tempfile.gettempdir(), source.split("/")[-1])
             try:
