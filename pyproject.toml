@@ -1,3 +1,17 @@
+# Amazon.com, Inc.
+#
+# License:
+#    Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+#    Licensed under the Apache License, Version 2.0 (the "License"). You may not use 
+#    this file except in compliance with the License. A copy of the License is located at
+#
+#        http://aws.amazon.com/apache2.0/
+#
+#    or in the "license" file accompanying this file. This file is distributed on an "AS IS" 
+#    BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the 
+#    License for the specific language governing permissions and limitations under the License.
+
 [tool.poetry]
 name = "ggv2provisioner"
 version = "0.1.0"
@@ -8,11 +22,28 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.8"
+click = "^8.0.1"
+validators = "^0.18.2"
+requests = "^2.26.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
 mypy = "^0.910"
+moto = "^2.2.8"
+types-click = "^7.1.5"
+coverage = "^5.5"
+types-requests = "^2.25.9"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+ggv2provisioner = "ggv2provisioner.cli:cli"
+
+[tool.coverage.run]
+omit = [".*", "*/site-packages/*"]
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+exclude_lines = ["if __name__ == .__main__.:"]
