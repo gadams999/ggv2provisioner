@@ -31,8 +31,13 @@ def cli() -> None:
     default="https://d2s8p88vqu9w66.cloudfront.net/releases/greengrass-nucleus-latest.zip",
 )
 @click.option("-t", "--target", required=True, default="/greengrass/v2")
-def install(source, target):
-    install_greengrass(source=source, target_dir=target)
+@click.option(
+    "--system-setup",
+    type=click.Choice(["true", "false"], case_sensitive=False),
+    default="true",
+)
+def install(source, target, system_setup):
+    install_greengrass(source=source, target_dir=target, system_setup=system_setup)
 
 
 if __name__ == "__main__":

@@ -30,25 +30,102 @@ def test_execute_cli_no_params():
     )
 
 
+# Install commands
 def test_cli_install_no_params():
-    """Install command should return help text"""
+    """Install command uses default valid URL for source and attempt install in /greengrass/v2"""
     runner = CliRunner()
-    result = runner.invoke(cli, "install")
-    assert result.exit_code == 2
+    result = runner.invoke(cli, ["install"])
+    assert result.exit_code == 1
     assert (
-        "Usage: cli install [OPTIONS]\nTry 'cli install --help' for help.\n"
+        "java.lang.RuntimeException: Cannot create all required directories"
         in result.output
     )
 
 
-def test_cli_install_source_file():
-    """Source set to local file"""
+def test_cli_install_temp(tmpdir):
+    """Install from default URL to temp directory w/o system setup"""
     runner = CliRunner()
     result = runner.invoke(
-        cli, "install --source tests/data/greengrass-nucleus-latest.zip, --target /tmp"
+        cli,
+        args=[
+            "install",
+            "--target",
+            tmpdir,
+            "--system-setup",
+            "false",
+        ],
     )
     assert result.exit_code == 0
-    assert "Greengrass successfully installed in /greengrass/v2\n" in result.output
+    assert "Greengrass successfully installed in" in result.output
+
+
+def test_cli_install_invalid_source_zip_file(tmpdir):
+    """Source set to local file zip file, but not the Greengrass one"""
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        args=[
+            "install",
+            "--source",
+            "tests/data/greengrass-nucleus-latest.zip",
+            "--target",
+            tmpdir,
+        ],
+    )
+    print(result.output)
+    assert result.exit_code == 1
+    assert "Unable to access jarfile" in result.output
+
+
+def test_cli_install_source_not_zip_file():
+    """Source set to local non-zip file"""
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "install",
+            "--source",
+            "tests/test_cli.py",
+            "--target",
+            "/tmp",
+        ],
+    )
+    assert result.exit_code == 1
+    assert "is not a valid zip file\n" in result.output
+
+
+def test_cli_file_does_not_exist():
+    """Source set to invalid"""
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "install",
+            "--source",
+            "file_does_not_exist",
+            "--target",
+            "/tmp",
+        ],
+    )
+    assert result.exit_code == 1
+    assert "Installation source: file_does_not_exist does not exist\n" in result.output
+
+
+def test_cli_invalid_source():
+    """File does not exist at URL"""
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "install",
+            "--source",
+            "https://asdfasfasfasfasgdfgas.com/file.zip",
+            "--target",
+            "/tmp",
+        ],
+    )
+    assert result.exit_code == 1
+    assert "is not a valid source URL\n" in result.output
 
 
 # test install from valid url - correct one
