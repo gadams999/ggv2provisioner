@@ -111,7 +111,7 @@ def test_cli_file_does_not_exist():
     assert "Installation source: file_does_not_exist does not exist\n" in result.output
 
 
-def test_cli_invalid_source():
+def test_cli_invalid_source(tmpdir):
     """File does not exist at URL"""
     runner = CliRunner()
     result = runner.invoke(
@@ -121,13 +121,30 @@ def test_cli_invalid_source():
             "--source",
             "https://asdfasfasfasfasgdfgas.com/file.zip",
             "--target",
-            "/tmp",
+            tmpdir,
         ],
     )
     assert result.exit_code == 1
-    assert "is not a valid source URL\n" in result.output
+    assert "Invalid download URL" in result.output
 
 
-# test install from valid url - correct one
-# test install from invalid url
-# test install from valid url - incorrect content
+# Provision commands
+#
+# Init config file values
+#               Create  reference
+# thing         todo    todo
+# certificate   todo    todo
+# IoT policy    todo    todo
+# Role alias    todo    todo
+#  IAM role     todo    todo
+# For all:
+#  iot endpoint
+#  credential provider endpoint
+#
+# options
+#  --override config
+#  --access-key
+#  --secret-access-key
+#  --credential-provider-endpooint
+#  --certificate
+#  --private-key

@@ -34,7 +34,7 @@ def install_greengrass(source: str, target_dir: Path, system_setup: str):
     :type system_setup: str
     """
 
-    print(f"Stating installation of Greengrass from: {source}")
+    print(f"Starting installation of Greengrass from: {source}")
     # validate file and uncompress into install dir
     with tempfile.TemporaryDirectory() as install_dir:
         if not validators.url(source) and Path(source).is_file():
@@ -48,8 +48,15 @@ def install_greengrass(source: str, target_dir: Path, system_setup: str):
                 results = requests.get(source)
                 with open(source_file, "wb") as f:
                     f.write(results.content)
-            except:
-                print(f"Error: {source} is not a valid source URL")
+            except PermissionError as e:  # pragma: no cover
+                print(
+                    f"Error saving Greengrass installation media in {tempfile.gettempdir()}, error: {e}"
+                )
+            except requests.exceptions.ConnectionError as e:
+                print(f"Invalid download URL {source}, {e}")
+                raise SystemExit(1)
+            except Exception as e:  # pragma: no cover
+                print(f"General error downloading {source}: {e}")
                 raise SystemExit(1)
         else:
             # Not a file and not a validator
@@ -85,5 +92,5 @@ def install_greengrass(source: str, target_dir: Path, system_setup: str):
     # if file, decompress if needed and verify Greengrass.jar included
 
     # else if URL, download and decompress
-    print(f"Greengrass successfully installed in {install_dir}")
+    print(f"Greengrass successfully installed in {target_dir}")
     return
